@@ -1,0 +1,111 @@
+<html>
+<head>
+<title>Работа с файлами</title>
+</head>
+<body>
+
+<div>
+<noscript>
+<div class="info">У Вас в браузере заблокирован JavaScript. Разрешите JavaScript для работы сайта!</div>
+</noscript>
+<h1>Работа с файлами</h1>
+
+<script type="text/javascript" language="JavaScript">
+var message="В данной статье мы рассмотрим встроенные средства python для работы с файлами: открытие / закрытие, чтение и запись"
+var neonbasecolor="#990000"
+var neontextcolor="red"
+var neontextcolor2="#FFFFA8"
+var flashspeed=100
+var flashingletters=3
+var flashingletters2=1
+var flashpause=0
+var n=0
+if (document.all||document.getElementById){
+   document.write('<font color="'+neonbasecolor+'" size=+2>')
+   for (m=0;m<message.length;m++)
+	document.write('<span id="neonlight'+m+'">'+message.charAt(m)+'</span>')
+   document.write('</font>')
+}
+else
+   document.write(message)
+function crossref(number){
+   var crossobj=document.all? eval("document.all.neonlight"+number) : document.getElementById("neonlight"+number)
+   return crossobj
+}
+function neon(){
+   //Change all letters to base color
+   if (n==0){
+	for (m=0;m<message.length;m++)
+	crossref(m).style.color=neonbasecolor
+	}
+   crossref(n).style.color=neontextcolor
+   if (n>flashingletters-1) crossref(n-flashingletters).style.color=neontextcolor2
+   if (n>(flashingletters+flashingletters2)-1) crossref(n-flashingletters-flashingletters2).style.color=neonbasecolor
+   if (n<message.length-1) n++
+   else{
+	n=0
+	clearInterval(flashing)
+	setTimeout("beginneon()",flashpause)
+	return
+	}
+}
+function beginneon(){
+   if (document.all||document.getElementById)
+   flashing=setInterval("neon()",flashspeed)
+}
+beginneon()
+</script>
+<br><br>Итак, начнем. Прежде, чем работать с файлом, его надо открыть. С этим замечательно справится встроенная функция open:
+<br>f = open('text.txt', 'r')
+<br>У функции open много параметров, они указаны в статье “Встроенные функции”, нам пока важны 3 аргумента: первый, это имя файла. Путь к файлу может быть относительным или абсолютным. <br> Второй аргумент, это режим, в котором мы будем открывать файл.
+<br>‘r’ открытие на чтение (является значением по умолчанию).
+<br>‘w’ открытие на запись, содержимое файла удаляется, если файла не существует,
+создается новый.
+<br>‘x’ открытие на запись, если файла не существует, иначе исключение.
+<br>‘a’ открытие на дозапись, информация добавляется в конец файла.
+<br>‘b’ открытие в двоичном режиме.
+<br>‘t’ открытие в текстовом режиме (является значением по умолчанию).
+<br>‘+’ открытие на чтение и запись
+<br>Режимы могут быть объединены, то есть, к примеру, ‘rb’ - чтение в двоичном режиме. По умолчанию режим равен ‘rt’. И последний аргумент, encoding, нужен только в текстовом режиме чтения <br> файла. Этот аргумент задает кодировку. Открыли мы файл, а теперь мы хотим прочитать из него информацию. Для этого есть несколько способов, но большого интереса заслуживают лишь два из <br> них. Первый - метод read, читающий весь файл целиком, если был вызван без аргументов, и n символов, если был вызван с аргументом (целым числом n).
+<br> >>> f = open('text.txt')
+<br> >>> f.read(1)
+<br> 'H'
+<br> >>> f.read()
+<br> 'Hello world!\nThe end.\n\n'
+<br> Ещё один способ сделать это - прочитать файл построчно, воспользовавшись циклом for:
+<br> >>> f = open('text.txt')
+<br> >>> for line in f:
+<br> ... line
+<br> ...
+<br> 'Hello world!\n'
+<br> '\n'
+<br> 'The end.\n'
+<br> '\n'
+<br> Теперь рассмотрим запись в файл. Попробуем записать в файл вот такой вот список:
+<br> >>> l = [str(i)+str(i-1) for i in range(20)]
+<br> >>> l
+<br> ['0-1', '10', '21', '32', '43', '54', '65', '76', '87', '98', '109', '1110', '1211
+<br> ˓→', '1312', '1413', '1514', '1615', '1716', '1817', '1918']
+<br> Откроем файл на запись:
+<br> >>> f = open('text.txt', 'w')
+<br> Запись в файл осуществляется с помощью метода write:
+<br> >>> for index in l:
+<br> ... f.write(index + '\n')
+<br> ...
+<br> 4
+<br> 3
+<br> 3
+<br> 3
+<br> 3
+<br>Для тех, кто не понял, что это за цифры, поясню: метод write возвращает число записанных символов. После окончания работы с файлом его обязательно нужно закрыть с помощью метода close:
+<br> >>> f.close()
+<br> Теперь попробуем воссоздать этот список из получившегося файла. Откроем файл на чтение (надеюсь, вы поняли, как это сделать?), и прочитаем строки.
+<br> >>> f = open('text.txt', 'r')
+<br> >>> l = [line.strip() for line in f]
+<br> >>> l
+<br> ['0-1', '10', '21', '32', '43', '54', '65', '76', '87', '98', '109', '1110', '1211
+<br> ˓→', '1312', '1413', '1514', '1615', '1716', '1817', '1918']
+<br> >>> f.close()
+<br> Мы получили тот же список, что и был. В более сложных случаях (словарях, вложенных кортежей и т. д.) алгоритм записи придумать сложнее. Но это и не нужно. В python уже давно придумали <br> средства, такие как pickle или json, позволяющие сохранять в файле сложные структуры.
+</body>
+</html>
